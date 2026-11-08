@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pollachi Capitals | Deepavali Picks Performance</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --accent: #2563eb;
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+      --border: #1f2937;
+      --row-hover: #1e293b;
+      --header-bg: #162032;
+      --green: #10b981;
+      --red: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.35rem;
+    }
+ h2 {
+	font-size: 1.4rem;       
+	font-weight: 250;       
+	font-style: italic;
+	color: #ffffff;       
+	margin-bottom: 0.35rem;
+
+    }
+    p.tagline {
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1150px;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .summary-card {
+      background-color: var(--header-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .summary-card .label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+    }
+
+    .summary-card .value {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .positive { color: var(--green) !important; }
+    .negative { color: var(--red) !important; }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .control-select, .search-box {
+      background-color: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .control-select:focus, .search-box:focus {
+      border-color: var(--accent);
+    }
+
+    .search-box {
+      width: 220px;
+    }
+
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      max-height: 600px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    thead th {
+      background-color: var(--header-bg);
+      color: #e5e7eb;
+      padding: 0.85rem 1rem;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      border-bottom: 2px solid var(--border);
+    }
+
+    thead th:hover {
+      background-color: #1e2d45;
+    }
+
+    .sort-icon {
+      font-size: 0.75rem;
+      margin-left: 0.35rem;
+      color: var(--text-muted);
+    }
+
+    tbody td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: #d1d5db;
+      white-space: nowrap;
+    }
+
+    tbody tr:hover {
+      background-color: var(--row-hover);
+    }
+
+    .status-msg {
+      text-align: center;
+      padding: 2.5rem;
+      color: var(--text-muted);
+    }
+
+    footer {
+      margin-top: 2.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Pollachi Capitals</h1>
+	<h2>Your partner in wealth creation.</h2>
+    <p class="tagline">Deepavali Picks — ₹10,000 Per Stock Investment Performance | Considered closing price of Muhurat Trading</p>
+    <p id="updatedAtText" style="font-size: 0.8rem; color: #6b7280; margin-top: 0.3rem;">Auto-refreshes every 5 mins • Last Sync: Ready</p>
+  </header>
+
+  <main class="container">
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="label">Stocks Selected</div>
+        <div class="value" id="kpiCount">0</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Total Invested (₹10,000 Each)</div>
+        <div class="value" id="kpiInvested">₹0</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Current Portfolio Value</div>
+        <div class="value" id="kpiCurrent">₹0</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Overall Gain / Loss</div>
+        <div class="value" id="kpiReturns">₹0 (0.00%)</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="filter-group">
+        <label for="yearFilter" style="font-size: 0.85rem; color: var(--text-muted);">Year:</label>
+        <select id="yearFilter" class="control-select" onchange="applyFilters()">
+          <option value="ALL">All Years</option>
+        </select>
+
+        <label for="sortPreset" style="font-size: 0.85rem; color: var(--text-muted);">Sort Returns:</label>
+        <select id="sortPreset" class="control-select" onchange="applyQuickSort()">
+          <option value="high">Highest Return First</option>
+          <option value="low">Lowest Return First</option>
+          <option value="none">Default</option>
+        </select>
+      </div>
+
+      <input type="text" id="searchInput" class="search-box" placeholder="Search stock symbol..." onkeyup="applyFilters()" />
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortTableBy(0)">Batch <span class="sort-icon" id="icon0">⇅</span></th>
+            <th onclick="sortTableBy(1)">Symbol <span class="sort-icon" id="icon1">⇅</span></th>
+            <th onclick="sortTableBy(2)">Entry Price (₹) <span class="sort-icon" id="icon2">⇅</span></th>
+            <th onclick="sortTableBy(3)">Current LTP (₹) <span class="sort-icon" id="icon3">⇅</span></th>
+            <th onclick="sortTableBy(4)">Return (%) <span class="sort-icon" id="icon4">⇅</span></th>
+            <th onclick="sortTableBy(5)">Invested <span class="sort-icon" id="icon5">⇅</span></th>
+            <th onclick="sortTableBy(6)">Current Value <span class="sort-icon" id="icon6">⇅</span></th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr>
+            <td class="status-msg" colspan="7">Loading data...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Pollachi Capitals. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const BASE_INVESTMENT = 10000;
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSmNn0VFfGMCnV1D4btKVJOsCfy8xYg1XH3NIcPJAoLdnu-uDRk56FTQx082vt4XS4djzJ3fK3qjq5q/pub?output=csv";
+
+    // Complete snapshot including newly added DP 2026 picks
+    const INITIAL_RECORDS = [
+      { batch: "DP 2022", symbol: "MASPTOP50", entry: 26.35, ltp: 98.45, returnPct: 273.62 },
+      { batch: "DP 2022", symbol: "DIXON", entry: 4285, ltp: 12604, returnPct: 194.14 },
+      { batch: "DP 2022", symbol: "HFCL", entry: 79.9, ltp: 216.48, returnPct: 170.94 },
+      { batch: "DP 2025", symbol: "WELCORP", entry: 850.05, ltp: 2241, returnPct: 163.63 },
+      { batch: "DP 2023", symbol: "HAL", entry: 2056, ltp: 4985, returnPct: 142.46 },
+      { batch: "DP 2022", symbol: "ASHOKLEY", entry: 72.35, ltp: 178, returnPct: 146.03 },
+      { batch: "DP 2022", symbol: "AUTOBEES", entry: 129.63, ltp: 288.19, returnPct: 122.32 },
+      { batch: "DP 2023", symbol: "ASHOKLEY", entry: 79.9, ltp: 178, returnPct: 122.78 },
+      { batch: "DP 2022", symbol: "IOC", entry: 68.05, ltp: 145.1, returnPct: 113.23 },
+      { batch: "DP 2024", symbol: "SUNFLAG", entry: 204, ltp: 396.5, returnPct: 94.36 },
+      { batch: "DP 2022", symbol: "TATASTEEL", entry: 101.2, ltp: 190.2, returnPct: 87.94 },
+      { batch: "DP 2022", symbol: "UNITDSPR", entry: 835.25, ltp: 1412, returnPct: 69.05 },
+      { batch: "DP 2025", symbol: "APARINDS", entry: 8550, ltp: 14601, returnPct: 70.77 },
+      { batch: "DP 2022", symbol: "AUBANK", entry: 579.3, ltp: 929, returnPct: 60.37 },
+      { batch: "DP 2024", symbol: "EICHERMOT", entry: 4894, ltp: 7651, returnPct: 56.33 },
+      { batch: "DP 2023", symbol: "TITAN", entry: 3260, ltp: 4990.5, returnPct: 53.08 },
+      { batch: "DP 2023", symbol: "INFRABEES", entry: 654, ltp: 975.02, returnPct: 49.09 },
+      { batch: "DP 2025", symbol: "SUNFLAG", entry: 260.55, ltp: 396.5, returnPct: 52.18 },
+      { batch: "DP 2023", symbol: "ESG", entry: 31.96, ltp: 42.61, returnPct: 33.32 },
+      { batch: "DP 2023", symbol: "AUBANK", entry: 700, ltp: 929, returnPct: 32.71 },
+      { batch: "DP 2024", symbol: "CEATLTD", entry: 2805, ltp: 3486, returnPct: 24.28 },
+      { batch: "DP 2022", symbol: "ITBEES", entry: 29.62, ltp: 36.69, returnPct: 23.87 },
+      { batch: "DP 2023", symbol: "POWERGRID", entry: 211, ltp: 261.35, returnPct: 23.86 },
+      { batch: "DP 2023", symbol: "RELIANCE", entry: 1157, ltp: 1324, returnPct: 14.43 },
+      { batch: "DP 2024", symbol: "GESHIP", entry: 1289, ltp: 1469.9, returnPct: 14.03 },
+      { batch: "DP 2024", symbol: "COMMOIETF", entry: 89.79, ltp: 99.55, returnPct: 10.87 },
+      { batch: "DP 2025", symbol: "AXISBANK", entry: 1233, ltp: 1314.7, returnPct: 6.63 },
+      { batch: "DP 2024", symbol: "MIDCAPIETF", entry: 21.47, ltp: 23.04, returnPct: 7.31 },
+      { batch: "DP 2025", symbol: "OBEROIRLTY", entry: 1698, ltp: 1737.1, returnPct: 2.30 },
+      { batch: "DP 2024", symbol: "HDFCSML250", entry: 178.22, ltp: 177.5, returnPct: -0.40 },
+      { batch: "DP 2024", symbol: "OIL", entry: 471, ltp: 444.5, returnPct: -5.63 },
+      { batch: "DP 2025", symbol: "AUTOAXLES", entry: 1700, ltp: 1628, returnPct: -4.24 },
+      { batch: "DP 2025", symbol: "FIEMIND", entry: 2029, ltp: 1895, returnPct: -6.60 },
+      { batch: "DP 2023", symbol: "HAVELLS", entry: 1256, ltp: 1123, returnPct: -10.59 },
+      { batch: "DP 2025", symbol: "INFY", entry: 1471, ltp: 1171.6, returnPct: -20.35 },
+      { batch: "DP 2025", symbol: "CHOLAHLDNG", entry: 1850, ltp: 1490, returnPct: -19.46 },
+      { batch: "DP 2025", symbol: "TARIL", entry: 483.8, ltp: 312, returnPct: -35.51 },
+      { batch: "DP 2024", symbol: "BFINVEST", entry: 650, ltp: 405, returnPct: -37.69 },
+      { batch: "DP 2024", symbol: "ARE&M", entry: 1390, ltp: 741.9, returnPct: -46.63 },
+      { batch: "DP 2023", symbol: "KPITTECH", entry: 1362, ltp: 543.9, returnPct: -60.07 },
+      // DP 2026 Picks
+      { batch: "DP 2026", symbol: "ACC", entry: 1247, ltp: null, returnPct: 0 },
+      { batch: "DP 2026", symbol: "APOLLOTYRE", entry: 416.55, ltp: null, returnPct: 0 },
+      { batch: "DP 2026", symbol: "CHOLAHLDNG", entry: 1476, ltp: null, returnPct: 0 },
+      { batch: "DP 2026", symbol: "CHENNPETRO", entry: 1456, ltp: null, returnPct: 0 },
+      { batch: "DP 2026", symbol: "HINDALCO", entry: 953, ltp: null, returnPct: 0 },
+      { batch: "DP 2026", symbol: "INFY", entry: 1171, ltp: null, returnPct: 0 },
+      { batch: "DP 2026", symbol: "JSL", entry: 704, ltp: null, returnPct: 0 },
+      { batch: "DP 2026", symbol: "M&M", entry: 3267, ltp: null, returnPct: 0 },
+      { batch: "DP 2026", symbol: "PNCINFRA", entry: 131.8, ltp: null, returnPct: 0 },
+      { batch: "DP 2026", symbol: "SBIN", entry: 1016, ltp: null, returnPct: 0 }
+    ];
+
+    let allRecords = [];
+    let filteredRecords = [];
+    let currentSort = { col: null, dir: null };
+
+    function calculateValues(records) {
+      return records.map(r => {
+        const isAwaiting = r.ltp === null || isNaN(r.ltp) || r.ltp <= 0;
+        const returnPct = isAwaiting ? 0 : r.returnPct;
+        const currentValue = isAwaiting ? BASE_INVESTMENT : BASE_INVESTMENT * (1 + (returnPct / 100));
+
+        return {
+          ...r,
+          isAwaiting: isAwaiting,
+          returnPct: returnPct,
+          invested: BASE_INVESTMENT,
+          currentValue: currentValue
+        };
+      });
+    }
+
+    function initPage(records) {
+      allRecords = calculateValues(records);
+      populateYearDropdown();
+      applyFilters();
+    }
+
+    function populateYearDropdown() {
+      const yearFilter = document.getElementById('yearFilter');
+      const prevSelected = yearFilter.value;
+      const uniqueYears = [...new Set(allRecords.map(r => r.batch))].sort().reverse();
+
+      yearFilter.innerHTML = '<option value="ALL">All Years</option>';
+      uniqueYears.forEach(year => {
+        const opt = document.createElement('option');
+        opt.value = year;
+        opt.textContent = year;
+        yearFilter.appendChild(opt);
+      });
+      if (prevSelected) yearFilter.value = prevSelected;
+    }
+
+    function applyFilters() {
+      const selectedYear = document.getElementById('yearFilter').value;
+      const search = document.getElementById('searchInput').value.toLowerCase().trim();
+
+      filteredRecords = allRecords.filter(item => {
+        const matchesYear = (selectedYear === 'ALL') || (item.batch === selectedYear);
+        const matchesSearch = !search || item.symbol.toLowerCase().includes(search) || item.batch.toLowerCase().includes(search);
+        return matchesYear && matchesSearch;
+      });
+
+      const sortChoice = document.getElementById('sortPreset').value;
+      if (sortChoice === 'high') {
+        filteredRecords.sort((a, b) => b.returnPct - a.returnPct);
+      } else if (sortChoice === 'low') {
+        filteredRecords.sort((a, b) => a.returnPct - b.returnPct);
+      } else if (currentSort.col !== null) {
+        executeSort();
+      }
+
+      updateKPIs();
+      renderTable();
+    }
+
+    function applyQuickSort() {
+      const sortChoice = document.getElementById('sortPreset').value;
+      resetIcons();
+      if (sortChoice === 'high') {
+        filteredRecords.sort((a, b) => b.returnPct - a.returnPct);
+        document.getElementById('icon4').textContent = '▼';
+      } else if (sortChoice === 'low') {
+        filteredRecords.sort((a, b) => a.returnPct - b.returnPct);
+        document.getElementById('icon4').textContent = '▲';
+      }
+      renderTable();
+    }
+
+    function sortTableBy(colIndex) {
+      document.getElementById('sortPreset').value = 'none';
+
+      if (currentSort.col === colIndex) {
+        currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSort.col = colIndex;
+        currentSort.dir = 'desc';
+      }
+
+      resetIcons();
+      document.getElementById('icon' + colIndex).textContent = currentSort.dir === 'asc' ? '▲' : '▼';
+      executeSort();
+      renderTable();
+    }
+
+    function executeSort() {
+      const keys = ['batch', 'symbol', 'entry', 'ltp', 'returnPct', 'invested', 'currentValue'];
+      const field = keys[currentSort.col];
+
+      filteredRecords.sort((a, b) => {
+        let valA = a[field] ?? -999999;
+        let valB = b[field] ?? -999999;
+
+        if (typeof valA === 'number' && typeof valB === 'number') {
+          return currentSort.dir === 'asc' ? valA - valB : valB - valA;
+        }
+        return currentSort.dir === 'asc' 
+          ? String(valA).localeCompare(String(valB)) 
+          : String(valB).localeCompare(String(valA));
+      });
+    }
+
+    function resetIcons() {
+      for (let i = 0; i <= 6; i++) {
+        const el = document.getElementById('icon' + i);
+        if (el) el.textContent = '⇅';
+      }
+    }
+
+    function updateKPIs() {
+      const count = filteredRecords.length;
+      const totalInvested = count * BASE_INVESTMENT;
+      const totalCurrent = filteredRecords.reduce((acc, curr) => acc + curr.currentValue, 0);
+      const gain = totalCurrent - totalInvested;
+      const roi = totalInvested > 0 ? (gain / totalInvested) * 100 : 0;
+
+      document.getElementById('kpiCount').textContent = count;
+      document.getElementById('kpiInvested').textContent = '₹' + totalInvested.toLocaleString('en-IN');
+      document.getElementById('kpiCurrent').textContent = '₹' + Math.round(totalCurrent).toLocaleString('en-IN');
+
+      const kpiReturns = document.getElementById('kpiReturns');
+      const prefix = gain >= 0 ? '+' : '';
+      kpiReturns.textContent = `${prefix}₹${Math.round(gain).toLocaleString('en-IN')} (${roi.toFixed(2)}%)`;
+      kpiReturns.className = 'value ' + (gain >= 0 ? 'positive' : 'negative');
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+
+      if (filteredRecords.length === 0) {
+        tbody.innerHTML = '<tr><td class="status-msg" colspan="7">No matching picks found.</td></tr>';
+        return;
+      }
+
+      filteredRecords.forEach(row => {
+        const tr = document.createElement('tr');
+        const ltpDisplay = row.isAwaiting ? '<span style="color:#9ca3af;font-style:italic;">Awaiting LTP</span>' : `₹${row.ltp.toLocaleString('en-IN')}`;
+        
+        let returnDisplay;
+        let valClass = '';
+        if (row.isAwaiting) {
+          returnDisplay = '<span style="color:#9ca3af;">0.00%</span>';
+        } else {
+          valClass = row.returnPct >= 0 ? 'positive' : 'negative';
+          const sign = row.returnPct >= 0 ? '+' : '';
+          returnDisplay = `<strong class="${valClass}">${sign}${row.returnPct.toFixed(2)}%</strong>`;
+        }
+
+        tr.innerHTML = `
+          <td><strong>${row.batch}</strong></td>
+          <td><strong>${row.symbol}</strong></td>
+          <td>₹${row.entry.toLocaleString('en-IN')}</td>
+          <td>${ltpDisplay}</td>
+          <td>${returnDisplay}</td>
+          <td>₹${row.invested.toLocaleString('en-IN')}</td>
+          <td class="${valClass}">₹${Math.round(row.currentValue).toLocaleString('en-IN')}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Live Sync Function with CORS proxies & fallback
+    async function fetchLiveData() {
+      const proxies = [
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(CSV_URL)}`,
+        `https://corsproxy.io/?${encodeURIComponent(CSV_URL)}`
+      ];
+
+      for (const proxyUrl of proxies) {
+        try {
+          const res = await fetch(proxyUrl);
+          if (!res.ok) continue;
+          const csvText = await res.text();
+          if (!csvText || !csvText.includes('POLCAP')) continue;
+
+          const lines = csvText.split(/\r?\n/).map(l => l.split(','));
+          const freshData = [];
+
+          for (let i = 2; i < lines.length; i++) {
+            const cols = lines[i];
+            if (cols.length >= 5) {
+              const batch = cols[0].replace(/"/g, '').trim();
+              const symbol = cols[3].replace(/"/g, '').trim();
+              const entry = parseFloat(cols[4].replace(/[₹$,"]/g, ''));
+              const rawLtp = cols[5] ? cols[5].replace(/[₹$,"]/g, '').trim() : '';
+              const ltp = rawLtp ? parseFloat(rawLtp) : null;
+              const rawPct = cols[6] ? cols[6].replace(/[₹$,%"]/g, '').trim() : '';
+              const pct = rawPct ? parseFloat(rawPct) : null;
+
+              if (symbol && !isNaN(entry)) {
+                freshData.push({
+                  batch: batch,
+                  symbol: symbol,
+                  entry: entry,
+                  ltp: !isNaN(ltp) ? ltp : null,
+                  returnPct: !isNaN(pct) ? pct : (ltp ? (((ltp - entry) / entry) * 100) : 0)
+                });
+              }
+            }
+          }
+
+          if (freshData.length > 0) {
+            initPage(freshData);
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            document.getElementById('updatedAtText').textContent = `Auto-refreshes every 5 mins • Last Sync: ${timeStr}`;
+            break;
+          }
+        } catch (e) {}
+      }
+    }
+
+    // 1. Initial Render
+    initPage(INITIAL_RECORDS);
+
+    // 2. Fetch live data immediately
+    fetchLiveData();
+
+    // 3. Auto-refresh every 5 minutes (300,000 milliseconds)
+    setInterval(fetchLiveData, 300000);
+  </script>
+</body>
+</html>
