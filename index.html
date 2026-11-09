@@ -41,19 +41,12 @@
     }
 
     h1 {
-      font-size: 3rem;
+      font-size: 2.2rem;
       font-weight: 700;
       color: #ffffff;
       margin-bottom: 0.35rem;
     }
- h2 {
-	font-size: 1.4rem;       
-	font-weight: 250;       
-	font-style: italic;
-	color: #ffffff;       
-	margin-bottom: 0.35rem;
 
-    }
     p.tagline {
       font-size: 1rem;
       color: var(--text-muted);
@@ -69,6 +62,7 @@
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
     }
 
+    /* KPI Summary Cards */
     .summary-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -100,6 +94,7 @@
     .positive { color: var(--green) !important; }
     .negative { color: var(--red) !important; }
 
+    /* Controls */
     .toolbar {
       display: flex;
       justify-content: space-between;
@@ -134,6 +129,7 @@
       width: 220px;
     }
 
+    /* Table */
     .table-wrapper {
       width: 100%;
       overflow-x: auto;
@@ -202,9 +198,8 @@
 
   <header>
     <h1>Pollachi Capitals</h1>
-	<h2>Your partner in wealth creation.</h2>
-    <p class="tagline">Deepavali Picks — ₹10,000 Per Stock Investment Performance | Considered closing price of Muhurat Trading</p>
-    <p id="updatedAtText" style="font-size: 0.8rem; color: #6b7280; margin-top: 0.3rem;">Auto-refreshes every 5 mins • Last Sync: Ready</p>
+    <p class="tagline">Deepavali Picks — ₹10,000 Per Stock Investment Performance</p>
+    <p id="updatedAtText" style="font-size: 0.8rem; color: #6b7280; margin-top: 0.3rem;">Auto-refreshes every 5 mins • Initializing...</p>
   </header>
 
   <main class="container">
@@ -275,59 +270,59 @@
     const BASE_INVESTMENT = 10000;
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSmNn0VFfGMCnV1D4btKVJOsCfy8xYg1XH3NIcPJAoLdnu-uDRk56FTQx082vt4XS4djzJ3fK3qjq5q/pub?output=csv";
 
-    // Complete snapshot including newly added DP 2026 picks
+    // Immediate fallback snapshot with updated DP 2026 LTP prices
     const INITIAL_RECORDS = [
-      { batch: "DP 2022", symbol: "MASPTOP50", entry: 26.35, ltp: 98.45, returnPct: 273.62 },
-      { batch: "DP 2022", symbol: "DIXON", entry: 4285, ltp: 12604, returnPct: 194.14 },
-      { batch: "DP 2022", symbol: "HFCL", entry: 79.9, ltp: 216.48, returnPct: 170.94 },
-      { batch: "DP 2025", symbol: "WELCORP", entry: 850.05, ltp: 2241, returnPct: 163.63 },
-      { batch: "DP 2023", symbol: "HAL", entry: 2056, ltp: 4985, returnPct: 142.46 },
-      { batch: "DP 2022", symbol: "ASHOKLEY", entry: 72.35, ltp: 178, returnPct: 146.03 },
-      { batch: "DP 2022", symbol: "AUTOBEES", entry: 129.63, ltp: 288.19, returnPct: 122.32 },
-      { batch: "DP 2023", symbol: "ASHOKLEY", entry: 79.9, ltp: 178, returnPct: 122.78 },
-      { batch: "DP 2022", symbol: "IOC", entry: 68.05, ltp: 145.1, returnPct: 113.23 },
-      { batch: "DP 2024", symbol: "SUNFLAG", entry: 204, ltp: 396.5, returnPct: 94.36 },
-      { batch: "DP 2022", symbol: "TATASTEEL", entry: 101.2, ltp: 190.2, returnPct: 87.94 },
-      { batch: "DP 2022", symbol: "UNITDSPR", entry: 835.25, ltp: 1412, returnPct: 69.05 },
-      { batch: "DP 2025", symbol: "APARINDS", entry: 8550, ltp: 14601, returnPct: 70.77 },
-      { batch: "DP 2022", symbol: "AUBANK", entry: 579.3, ltp: 929, returnPct: 60.37 },
-      { batch: "DP 2024", symbol: "EICHERMOT", entry: 4894, ltp: 7651, returnPct: 56.33 },
-      { batch: "DP 2023", symbol: "TITAN", entry: 3260, ltp: 4990.5, returnPct: 53.08 },
-      { batch: "DP 2023", symbol: "INFRABEES", entry: 654, ltp: 975.02, returnPct: 49.09 },
-      { batch: "DP 2025", symbol: "SUNFLAG", entry: 260.55, ltp: 396.5, returnPct: 52.18 },
-      { batch: "DP 2023", symbol: "ESG", entry: 31.96, ltp: 42.61, returnPct: 33.32 },
-      { batch: "DP 2023", symbol: "AUBANK", entry: 700, ltp: 929, returnPct: 32.71 },
-      { batch: "DP 2024", symbol: "CEATLTD", entry: 2805, ltp: 3486, returnPct: 24.28 },
-      { batch: "DP 2022", symbol: "ITBEES", entry: 29.62, ltp: 36.69, returnPct: 23.87 },
-      { batch: "DP 2023", symbol: "POWERGRID", entry: 211, ltp: 261.35, returnPct: 23.86 },
-      { batch: "DP 2023", symbol: "RELIANCE", entry: 1157, ltp: 1324, returnPct: 14.43 },
-      { batch: "DP 2024", symbol: "GESHIP", entry: 1289, ltp: 1469.9, returnPct: 14.03 },
-      { batch: "DP 2024", symbol: "COMMOIETF", entry: 89.79, ltp: 99.55, returnPct: 10.87 },
-      { batch: "DP 2025", symbol: "AXISBANK", entry: 1233, ltp: 1314.7, returnPct: 6.63 },
-      { batch: "DP 2024", symbol: "MIDCAPIETF", entry: 21.47, ltp: 23.04, returnPct: 7.31 },
-      { batch: "DP 2025", symbol: "OBEROIRLTY", entry: 1698, ltp: 1737.1, returnPct: 2.30 },
-      { batch: "DP 2024", symbol: "HDFCSML250", entry: 178.22, ltp: 177.5, returnPct: -0.40 },
-      { batch: "DP 2024", symbol: "OIL", entry: 471, ltp: 444.5, returnPct: -5.63 },
-      { batch: "DP 2025", symbol: "AUTOAXLES", entry: 1700, ltp: 1628, returnPct: -4.24 },
-      { batch: "DP 2025", symbol: "FIEMIND", entry: 2029, ltp: 1895, returnPct: -6.60 },
-      { batch: "DP 2023", symbol: "HAVELLS", entry: 1256, ltp: 1123, returnPct: -10.59 },
-      { batch: "DP 2025", symbol: "INFY", entry: 1471, ltp: 1171.6, returnPct: -20.35 },
-      { batch: "DP 2025", symbol: "CHOLAHLDNG", entry: 1850, ltp: 1490, returnPct: -19.46 },
-      { batch: "DP 2025", symbol: "TARIL", entry: 483.8, ltp: 312, returnPct: -35.51 },
-      { batch: "DP 2024", symbol: "BFINVEST", entry: 650, ltp: 405, returnPct: -37.69 },
-      { batch: "DP 2024", symbol: "ARE&M", entry: 1390, ltp: 741.9, returnPct: -46.63 },
-      { batch: "DP 2023", symbol: "KPITTECH", entry: 1362, ltp: 543.9, returnPct: -60.07 },
+      { batch: "DP 2022", symbol: "MASPTOP50", entry: 26.35, ltp: 98.33, returnPct: 273.17 },
+      { batch: "DP 2022", symbol: "DIXON", entry: 4285, ltp: 12577, returnPct: 193.51 },
+      { batch: "DP 2022", symbol: "HFCL", entry: 79.9, ltp: 205.67, returnPct: 157.41 },
+      { batch: "DP 2025", symbol: "WELCORP", entry: 850.05, ltp: 2167.9, returnPct: 155.03 },
+      { batch: "DP 2023", symbol: "HAL", entry: 2056, ltp: 4889.3, returnPct: 137.81 },
+      { batch: "DP 2022", symbol: "ASHOKLEY", entry: 72.35, ltp: 174.5, returnPct: 141.19 },
+      { batch: "DP 2022", symbol: "AUTOBEES", entry: 129.63, ltp: 287.58, returnPct: 121.85 },
+      { batch: "DP 2023", symbol: "ASHOKLEY", entry: 79.9, ltp: 174.5, returnPct: 118.40 },
+      { batch: "DP 2022", symbol: "IOC", entry: 68.05, ltp: 147.53, returnPct: 116.80 },
+      { batch: "DP 2024", symbol: "SUNFLAG", entry: 204, ltp: 388.9, returnPct: 90.64 },
+      { batch: "DP 2022", symbol: "TATASTEEL", entry: 101.2, ltp: 185.06, returnPct: 82.87 },
+      { batch: "DP 2022", symbol: "UNITDSPR", entry: 835.25, ltp: 1419.5, returnPct: 69.95 },
+      { batch: "DP 2025", symbol: "APARINDS", entry: 8550, ltp: 14222, returnPct: 66.34 },
+      { batch: "DP 2022", symbol: "AUBANK", entry: 579.3, ltp: 924.4, returnPct: 59.57 },
+      { batch: "DP 2024", symbol: "EICHERMOT", entry: 4894, ltp: 7592, returnPct: 55.13 },
+      { batch: "DP 2023", symbol: "TITAN", entry: 3260, ltp: 4977.1, returnPct: 52.67 },
+      { batch: "DP 2023", symbol: "INFRABEES", entry: 654, ltp: 973.92, returnPct: 48.92 },
+      { batch: "DP 2025", symbol: "SUNFLAG", entry: 260.55, ltp: 388.9, returnPct: 49.26 },
+      { batch: "DP 2023", symbol: "ESG", entry: 31.96, ltp: 42.6, returnPct: 33.29 },
+      { batch: "DP 2023", symbol: "AUBANK", entry: 700, ltp: 924.4, returnPct: 32.06 },
+      { batch: "DP 2024", symbol: "CEATLTD", entry: 2805, ltp: 3490, returnPct: 24.42 },
+      { batch: "DP 2022", symbol: "ITBEES", entry: 29.62, ltp: 36.21, returnPct: 22.25 },
+      { batch: "DP 2023", symbol: "POWERGRID", entry: 211, ltp: 258.25, returnPct: 22.39 },
+      { batch: "DP 2023", symbol: "RELIANCE", entry: 1157, ltp: 1315, returnPct: 13.66 },
+      { batch: "DP 2024", symbol: "GESHIP", entry: 1289, ltp: 1430.7, returnPct: 10.99 },
+      { batch: "DP 2024", symbol: "COMMOIETF", entry: 89.79, ltp: 98.72, returnPct: 9.95 },
+      { batch: "DP 2025", symbol: "AXISBANK", entry: 1233, ltp: 1309, returnPct: 6.16 },
+      { batch: "DP 2024", symbol: "MIDCAPIETF", entry: 21.47, ltp: 23.12, returnPct: 7.69 },
+      { batch: "DP 2025", symbol: "OBEROIRLTY", entry: 1698, ltp: 1790.7, returnPct: 5.46 },
+      { batch: "DP 2024", symbol: "HDFCSML250", entry: 178.22, ltp: 177.26, returnPct: -0.54 },
+      { batch: "DP 2024", symbol: "OIL", entry: 471, ltp: 443.2, returnPct: -5.90 },
+      { batch: "DP 2025", symbol: "AUTOAXLES", entry: 1700, ltp: 1621.9, returnPct: -4.59 },
+      { batch: "DP 2025", symbol: "FIEMIND", entry: 2029, ltp: 1942, returnPct: -4.29 },
+      { batch: "DP 2023", symbol: "HAVELLS", entry: 1256, ltp: 1156, returnPct: -7.96 },
+      { batch: "DP 2025", symbol: "INFY", entry: 1471, ltp: 1152.5, returnPct: -21.65 },
+      { batch: "DP 2025", symbol: "CHOLAHLDNG", entry: 1850, ltp: 1418, returnPct: -23.35 },
+      { batch: "DP 2025", symbol: "TARIL", entry: 483.8, ltp: 310.8, returnPct: -35.76 },
+      { batch: "DP 2024", symbol: "BFINVEST", entry: 650, ltp: 410.95, returnPct: -36.78 },
+      { batch: "DP 2024", symbol: "ARE&M", entry: 1390, ltp: 739.7, returnPct: -46.78 },
+      { batch: "DP 2023", symbol: "KPITTECH", entry: 1362, ltp: 544.45, returnPct: -60.03 },
       // DP 2026 Picks
-      { batch: "DP 2026", symbol: "ACC", entry: 1247, ltp: null, returnPct: 0 },
-      { batch: "DP 2026", symbol: "APOLLOTYRE", entry: 416.55, ltp: null, returnPct: 0 },
-      { batch: "DP 2026", symbol: "CHOLAHLDNG", entry: 1476, ltp: null, returnPct: 0 },
-      { batch: "DP 2026", symbol: "CHENNPETRO", entry: 1456, ltp: null, returnPct: 0 },
-      { batch: "DP 2026", symbol: "HINDALCO", entry: 953, ltp: null, returnPct: 0 },
-      { batch: "DP 2026", symbol: "INFY", entry: 1171, ltp: null, returnPct: 0 },
-      { batch: "DP 2026", symbol: "JSL", entry: 704, ltp: null, returnPct: 0 },
-      { batch: "DP 2026", symbol: "M&M", entry: 3267, ltp: null, returnPct: 0 },
-      { batch: "DP 2026", symbol: "PNCINFRA", entry: 131.8, ltp: null, returnPct: 0 },
-      { batch: "DP 2026", symbol: "SBIN", entry: 1016, ltp: null, returnPct: 0 }
+      { batch: "DP 2026", symbol: "ACC", entry: 1247, ltp: 1233.7, returnPct: -1.07 },
+      { batch: "DP 2026", symbol: "APOLLOTYRE", entry: 416.55, ltp: 417.2, returnPct: 0.16 },
+      { batch: "DP 2026", symbol: "CHOLAHLDNG", entry: 1476, ltp: 1418, returnPct: -3.93 },
+      { batch: "DP 2026", symbol: "CHENNPETRO", entry: 1456, ltp: 1448.2, returnPct: -0.54 },
+      { batch: "DP 2026", symbol: "HINDALCO", entry: 953, ltp: 958.55, returnPct: 0.58 },
+      { batch: "DP 2026", symbol: "INFY", entry: 1171, ltp: 1152.5, returnPct: -1.58 },
+      { batch: "DP 2026", symbol: "JSL", entry: 704, ltp: 689.8, returnPct: -2.02 },
+      { batch: "DP 2026", symbol: "M&M", entry: 3267, ltp: 3282.4, returnPct: 0.47 },
+      { batch: "DP 2026", symbol: "PNCINFRA", entry: 131.8, ltp: 132.23, returnPct: 0.33 },
+      { batch: "DP 2026", symbol: "SBIN", entry: 1016, ltp: 1045.15, returnPct: 2.87 }
     ];
 
     let allRecords = [];
@@ -500,16 +495,20 @@
       });
     }
 
-    // Live Sync Function with CORS proxies & fallback
+    // Direct Live Fetch with Cache-Busting and CORS fallback
     async function fetchLiveData() {
-      const proxies = [
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(CSV_URL)}`,
-        `https://corsproxy.io/?${encodeURIComponent(CSV_URL)}`
+      const cacheBuster = `t=${new Date().getTime()}`;
+      const directUrl = `${CSV_URL}&${cacheBuster}`;
+      
+      const endpoints = [
+        directUrl,
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`,
+        `https://corsproxy.io/?${encodeURIComponent(directUrl)}`
       ];
 
-      for (const proxyUrl of proxies) {
+      for (const url of endpoints) {
         try {
-          const res = await fetch(proxyUrl);
+          const res = await fetch(url);
           if (!res.ok) continue;
           const csvText = await res.text();
           if (!csvText || !csvText.includes('POLCAP')) continue;
@@ -551,13 +550,13 @@
       }
     }
 
-    // 1. Initial Render
+    // 1. Instant render from data snapshot
     initPage(INITIAL_RECORDS);
 
     // 2. Fetch live data immediately
     fetchLiveData();
 
-    // 3. Auto-refresh every 5 minutes (300,000 milliseconds)
+    // 3. Auto-refresh every 5 minutes (300,000 ms)
     setInterval(fetchLiveData, 300000);
   </script>
 </body>
