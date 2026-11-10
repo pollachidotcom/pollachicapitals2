@@ -43,7 +43,7 @@
     h1 {
       font-size: 2.2rem;
       font-weight: 700;
-      color: #ffffff;
+      color: #7327F5;
       margin-bottom: 0.35rem;
     }
 
@@ -583,5 +583,167 @@
     // 3. Repeat sync every 5 minutes
     setInterval(fetchLiveData, 300000);
   </script>
+  <!-- Fullscreen Canvas for the Firecracker Particle Effect -->
+<canvas id="firecrackerCanvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999;"></canvas>
+
+<script>
+const canvas = document.getElementById('firecrackerCanvas');
+const ctx = canvas.getContext('2d');
+
+// Track screen sizes perfectly
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+let particles = [];
+let longClickTimer = null;
+let holdDuration = 0;
+let isHolding = false;
+let mouseX = 0;
+let mouseY = 0;
+
+// Particle Object Structure
+class Particle {
+    constructor(x, y, radius, color, velocityX, velocityY, alphaDecay) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.color = color;
+        this.vx = velocityX;
+        this.vy = velocityY;
+        this.alpha = 1;
+        this.decay = alphaDecay;
+        this.gravity = 0.08; // Simulates real firecracker drop
+    }
+
+    draw() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+        ctx.fillStyle = this.color;
+        // Gives firecrackers their signature glowing aura
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = this.color;
+        ctx.fill();
+        ctx.restore();
+    }
+
+    update() {
+        this.vy += this.gravity;
+        this.x += this.vx;
+        this.y += this.vy;
+        this.alpha -= this.decay;
+    }
+}
+
+// Generates vivid, festive colors
+function getRandomColor() {
+    const colors = [
+        '#FF3F6C', '#FFDE4D', '#54B435', '#0fd', 
+        '#FF87B2', '#FFB100', '#E94560', '#00f5ff'
+    ];
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+
+// Spawns firecrackers relative to power scale
+function createExplosion(x, y, multiplier = 1) {
+    // Standard click gives ~25 particles. Holding grows it significantly!
+    const particleCount = Math.min(25 * multiplier, 180); 
+    
+    for (let i = 0; i < particleCount; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        // Faster dispersion power for larger charges
+        const speed = (Math.random() * 4 + 1) * (1 + multiplier * 0.2); 
+        
+        const velocityX = Math.cos(angle) * speed;
+        const velocityY = Math.sin(angle) * speed;
+        
+        const radius = Math.random() * 2 + 1.5;
+        const color = getRandomColor();
+        const alphaDecay = Math.random() * 0.015 + 0.01; // Particle lifespan
+
+        particles.push(new Particle(x, y, radius, color, velocityX, velocityY, alphaDecay));
+    }
+}
+
+// Long-Click Visual Ring Indicator 
+function drawChargingRing() {
+    if (isHolding) {
+        ctx.beginPath();
+        ctx.arc(mouseX, mouseY, holdDuration * 1.5, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255, 222, 77, 0.4)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    }
+}
+
+// Core Loop Rendering Everything 60 FPS
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    if (isHolding) {
+        holdDuration += 1.5; // Build explosion multiplier
+        drawChargingRing();
+    }
+
+    particles.forEach((particle, index) => {
+        if (particle.alpha <= 0) {
+            particles.splice(index, 1);
+        } else {
+            particle.update();
+            particle.draw();
+        }
+    });
+
+    requestAnimationFrame(animate);
+}
+animate();
+
+// Event Handlers tracking any global clicks
+window.addEventListener('mousedown', (e) => {
+    isHolding = true;
+    holdDuration = 1;
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+});
+
+window.addEventListener('mousemove', (e) => {
+    if (isHolding) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    }
+});
+
+window.addEventListener('mouseup', (e) => {
+    if (isHolding) {
+        isHolding = false;
+        // The scale multiplier scales up based on the length of the hold duration
+        const powerMultiplier = Math.max(1, holdDuration / 10);
+        createExplosion(e.clientX, e.clientY, powerMultiplier);
+        holdDuration = 0;
+    }
+});
+
+// Mobile Compatibility (Touch Support)
+window.addEventListener('touchstart', (e) => {
+    isHolding = true;
+    holdDuration = 1;
+    mouseX = e.touches[0].clientX;
+    mouseY = e.touches[0].clientY;
+});
+
+window.addEventListener('touchend', (e) => {
+    if (isHolding) {
+        isHolding = false;
+        const powerMultiplier = Math.max(1, holdDuration / 10);
+        createExplosion(mouseX, mouseY, powerMultiplier);
+        holdDuration = 0;
+    }
+});
+</script>
 </body>
 </html>
